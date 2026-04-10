@@ -38,7 +38,11 @@ export default function TimePicker({
   isLoading,
   selectedDate,
 }: TimePickerProps) {
-  const bookedSet = new Set(bookedSlots.map((t) => t.slice(0, 5)));
+  const bookedSet = new Set(
+    bookedSlots
+      .filter(Boolean)
+      .map((t) => t.slice(0, 5))
+  );
 
   return (
     <div className="space-y-4">
