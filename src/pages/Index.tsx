@@ -389,27 +389,35 @@ export default function Index() {
                     <DatePickerSection selected={selectedDate} onSelect={setSelectedDate} />
                   </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-lg font-bold text-[#1e3a5f]">الوقت</h3>
-                      <p className="text-sm text-slate-500">اختر الساعة المناسبة من المواعيد المتاحة</p>
-                    </div>
-                    <TimePicker
-                      selected={selectedTime}
-                      onSelect={setSelectedTime}
-                      bookedSlots={bookedSlots}
-                      isLoading={slotsLoading}
-                      selectedDate={selectedDate}
-                    />
-                  </div>
+                 {/* الخدمة أول */}
+<div className="space-y-4">
+  <div>
+    <h3 className="text-lg font-bold text-[#1e3a5f]">الخدمة</h3>
+    <p className="text-sm text-slate-500">اختر الخدمة التي تريد حجزها</p>
+  </div>
+  <ServicePicker
+    services={services}
+    selected={selectedService}
+    onSelect={setSelectedService}
+  />
+</div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-lg font-bold text-[#1e3a5f]">الخدمة</h3>
-                      <p className="text-sm text-slate-500">اختر الخدمة التي تريد حجزها</p>
-                    </div>
-                    <ServicePicker services={services} selected={selectedService} onSelect={setSelectedService} />
-                  </div>
+{/* الوقت بعد الخدمة */}
+<div className="space-y-4">
+  <div>
+    <h3 className="text-lg font-bold text-[#1e3a5f]">الوقت</h3>
+    <p className="text-sm text-slate-500">
+      اختر الساعة المناسبة من المواعيد المتاحة
+    </p>
+  </div>
+  <TimePicker
+    selected={selectedTime}
+    onSelect={setSelectedTime}
+    bookedSlots={bookedSlots}
+    isLoading={slotsLoading}
+    selectedDate={selectedDate}
+  />
+</div>
                 </div>
 
                 {emailError && (
