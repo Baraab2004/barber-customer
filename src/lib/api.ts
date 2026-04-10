@@ -160,6 +160,8 @@ export async function getBookedSlots(barberId: string, date: string): Promise<st
 }
 
 export async function createBooking(payload: BookingInsert) {
+console.log("NEW CREATE BOOKING VERSION RUNNING");
+  
   const normalizedTime = payload.booking_time.slice(0, 5);
   const duration = await getServiceDuration(payload.service_id);
   const end_time = addMinutes(normalizedTime, duration);
