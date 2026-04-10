@@ -74,9 +74,13 @@ export default function Index() {
       ).padStart(2, "0")}`
     : null;
 
-  const { data: bookedSlots = [], isLoading: slotsLoading } = useBookedSlots(fixedBarberId, dateStr);
-
+const { data: bookedSlots = [], isLoading: slotsLoading } = useBookedSlots(
+  fixedBarberId,
+  dateStr,
+  selectedDuration || null
+);
   const service = services.find((s) => s.id === selectedService);
+  const selectedDuration = Number(service?.duration ?? 0);
   useEffect(() => {
   if (!selectedTime || !service) return;
 
