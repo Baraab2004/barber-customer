@@ -44,6 +44,12 @@ export default function TimePicker({
       .map((t) => t.slice(0, 5))
   );
 
+  const availableSlots = TIME_SLOTS.filter((slot) => {
+    const isBooked = bookedSet.has(slot.time);
+    const isPast = isPastTime(slot.time, selectedDate);
+    return !isBooked && !isPast;
+  });
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
@@ -52,51 +58,19 @@ export default function TimePicker({
       </div>
 
       <p className="text-sm text-slate-500">
-        الأوقات غير المتاحة أو التي انتهت لليوم لا يمكن اختيارها
+        يتم عرض الأوقات المتاحة فقط
       </p>
 
       {isLoading ? (
         <div className="text-slate-500">جاري التحميل...</div>
+      ) : availableSlots.length === 0 ? (
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-slate-500">
+          لا توجد أوقات متاحة لهذا اليوم
+        </div>
       ) : (
         <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5">
-          {TIME_SLOTS.map((slot) => {
-            const isBooked = bookedSet.has(slot.time);
-            const isPast = isPastTime(slot.time, selectedDate);
-            const isUnavailable = isBooked || isPast;
-            const isSelected = selected === slot.time && !isUnavailable;
-
-            if (isUnavailable) {
-              return (
-                <div
-                  key={slot.time}
-                  aria-disabled="true"
-                  className={`relative rounded-xl border px-3 py-3 text-center text-sm font-semibold select-none ${
-                    isPast
-                      ? "border-slate-200 bg-slate-100 text-slate-400 opacity-70"
-                      : "border-red-200 bg-red-50 text-red-400 opacity-80"
-                  }`}
-                  style={{ cursor: "not-allowed" }}
-                >
-                  <span>{slot.display}</span>
-
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div
-                      className={`h-[2px] w-full rotate-[-20deg] ${
-                        isPast ? "bg-slate-300" : "bg-red-300"
-                      }`}
-                    />
-                  </div>
-
-                  <span
-                    className={`mt-1 block text-xs font-bold ${
-                      isPast ? "text-slate-400" : "text-red-400"
-                    }`}
-                  >
-                    {isPast ? "انتهى" : "محجوز"}
-                  </span>
-                </div>
-              );
-            }
+          {availableSlots.map((slot) => {
+            const isSelected = selected === slot.time;
 
             return (
               <button
