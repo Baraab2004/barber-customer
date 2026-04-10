@@ -21,14 +21,18 @@ export function useServices() {
   });
 }
 
-export function useBookedSlots(barberId: string | null, date: string | null) {
+export function useBookedSlots(
+  barberId: string | null,
+  date: string | null,
+  requestedDuration: number | null
+) {
   return useQuery({
-    queryKey: ["booked-slots", barberId, date],
+    queryKey: ["booked-slots", barberId, date, requestedDuration],
     queryFn: async () => {
-      if (!barberId || !date) return [];
-      return getBookedSlots(barberId, date);
+      if (!barberId || !date || !requestedDuration) return [];
+      return getBookedSlots(barberId, date, requestedDuration);
     },
-    enabled: !!barberId && !!date,
+    enabled: !!barberId && !!date && !!requestedDuration,
     refetchInterval: 5000,
   });
 }
