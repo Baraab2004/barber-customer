@@ -109,7 +109,11 @@ export async function getServices(): Promise<Service[]> {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Service));
 }
 
-export async function getBookedSlots(barberId: string, date: string): Promise<string[]> {
+export async function getBookedSlots(
+  barberId: string,
+  date: string,
+  requestedDuration = 10
+): Promise<string[]> {
   const allCandidateSlots: string[] = [];
 
   for (let hour = 0; hour < 24; hour += 1) {
@@ -135,7 +139,7 @@ export async function getBookedSlots(barberId: string, date: string): Promise<st
         const duration = getActiveBookingDuration(booking);
 
         allCandidateSlots.forEach((slot) => {
-          if (hasTimeOverlap(slot, 10, booking.booking_time as string, duration)) {
+         if (hasTimeOverlap(slot, requestedDuration, booking.booking_time as string, duration)) {
             blocked.add(slot);
           }
         });
