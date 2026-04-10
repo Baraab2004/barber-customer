@@ -8,7 +8,8 @@ import {
   serverTimestamp,
   updateDoc,
   where,
-  runTransaction,
+    setDoc,
+
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase";
 import {
@@ -216,37 +217,33 @@ export async function createBooking(payload: BookingInsert) {
     where("booking_date", "==", finalPayload.booking_date)
   );
 
-  await runTransaction(db, async (transaction) => {
-    const dayBookingsSnap = await transaction.get(dayBookingsQuery);
+  const dayBookingsSnap = await getDocs(dayBookingsQuery);
 
-    const exists = dayBookingsSnap.docs.some((bookingDoc) => {
-      const booking = bookingDoc.data() as Booking;
+  const exists = dayBookingsSnap.docs.some((bookingDoc) => {
+    const booking = bookingDoc.data() as Booking;
 
-      if (!isBookingActiveForAvailability(booking)) return false;
-      if (typeof booking.booking_time !== "string") return false;
+    if (!isBookingActiveForAvailability(booking)) return false;
+    if (typeof booking.booking_time !== "string") return false;
 
-      return hasTimeOverlap(
-        finalPayload.booking_time,
-        duration,
-        booking.booking_time.slice(0, 5),
-        getActiveBookingDuration(booking)
-      );
-    });
+    return hasTimeOverlap(
+      finalPayload.booking_time,
+      duration,
+      booking.booking_time.slice(0, 5),
+      getActiveBookingDuration(booking)
+    );
+  });
 
-    if (exists) {
-      const error = new Error("SLOT_ALREADY_BOOKED");
-      error.name = "SlotAlreadyBooked";
-      throw error;
-    }
+  if (exists) {
+    const error = new Error("SLOT_ALREADY_BOOKED");
+    error.name = "SlotAlreadyBooked";
+    throw error;
+  }
 
-    const bookingRef = doc(db, "bookings", bookingId);
-
-    transaction.set(bookingRef, {
-      ...finalPayload,
-      status: "confirmed",
-      created_at: serverTimestamp(),
-      updated_at: serverTimestamp(),
-    });
+  await setDoc(doc(db, "bookings", bookingId), {
+    ...finalPayload,
+    status: "confirmed",
+    created_at: serverTimestamp(),
+    updated_at: serverTimestamp(),
   });
 }
 
