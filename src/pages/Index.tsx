@@ -77,6 +77,14 @@ export default function Index() {
   const { data: bookedSlots = [], isLoading: slotsLoading } = useBookedSlots(fixedBarberId, dateStr);
 
   const service = services.find((s) => s.id === selectedService);
+  useEffect(() => {
+  if (!selectedTime || !service) return;
+
+  // إذا الوقت الحالي صار محجوز بعد تغيير الخدمة
+  if (bookedSlots.includes(selectedTime)) {
+    setSelectedTime(null);
+  }
+}, [selectedService, bookedSlots]);
   const barber = barbers.find((b) => b.id === fixedBarberId) ?? barbers[0];
 
   const resetForm = () => {
